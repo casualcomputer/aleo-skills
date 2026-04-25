@@ -1,0 +1,25 @@
+{
+  "name": "aleo-skills",
+  "displayName": "Aleo Skills",
+  "version": "0.1.0",
+  "description": "AI-assisted development skills for Aleo, the privacy-focused zero-knowledge L1. Plan architectures, write Leo programs, build dApps, integrate wallets, audit privacy, and deploy to mainnet.",
+  "author": {
+    "name": "casualcomputer",
+    "url": "https://github.com/casualcomputer"
+  },
+  "homepage": "https://github.com/casualcomputer/aleo-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/casualcomputer/aleo-skills"
+  },
+  "license": "MIT",
+  "keywords": [
+    "aleo",
+    "leo",
+    "zero-knowledge",
+    "privacy",
+    "blockchain",
+    "web3",
+    "smart-contracts"
+  ]
+}

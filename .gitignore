@@ -1,0 +1,21 @@
+# Aleo / Leo
+**/build/
+**/imports/
+**/leo.lock
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Node
+node_modules/
+.next/
+dist/
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

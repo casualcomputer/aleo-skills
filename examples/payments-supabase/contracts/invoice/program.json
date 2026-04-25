@@ -1,0 +1,6 @@
+{
+  "program": "aleo_invoice_example.aleo",
+  "version": "0.1.0",
+  "description": "Anonymous invoice payments — example implementation of architecture-payments.md",
+  "license": "MIT"
+}
