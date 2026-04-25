@@ -74,6 +74,27 @@ that imports these skills. They override generic defaults.
   `BHP512`, `BHP768`, `BHP1024`, `Pedersen64`, `Pedersen128`, `Poseidon2`,
   `Poseidon4`, `Poseidon8`, `Keccak256/384/512`, `SHA3_256/384/512`. Don't add
   anything else.
+- **Mind the testnet `test_` prefix.** Many Aleo programs deploy under both
+  networks, but the testnet variant typically prefixes the name with `test_`.
+  Verified examples (April 2026):
+  | Mainnet | Testnet |
+  |---------|---------|
+  | `usdcx_stablecoin.aleo` | `test_usdcx_stablecoin.aleo` |
+  | `usad_stablecoin.aleo` | `test_usad_stablecoin.aleo` |
+  | `usdcx_freezelist.aleo` | `test_usdcx_freezelist.aleo` |
+  | `usad_multisig_core.aleo` | `test_usad_multisig_core.aleo` |
+  Do NOT assume `test_` means "non-production" — on mainnet the prefix
+  is dropped, but the same logical contract exists. When generating dApp
+  code, derive program names from the `NETWORK` env var rather than
+  hardcoding. Note: `credits.aleo` and `token_registry.aleo` use the
+  same name on both networks (no `test_` prefix on testnet).
+- **Verify a program exists before referring to it.** Quick check:
+  ```bash
+  curl -s -o /dev/null -w "%{http_code}\n" \
+    "https://api.explorer.provable.com/v1/<network>/program/<name>"
+  # 200 = deployed, 404 = not deployed
+  ```
+  Never claim a program ID is real without this check.
 
 ## 5. Read the project before generating
 
