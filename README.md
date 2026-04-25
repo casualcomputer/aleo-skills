@@ -273,8 +273,18 @@ A few things devs trip on the first time:
    file, that's a bug — please file an issue.
 
 6. **Pin your Leo and SDK versions.** Aleo evolves fast; v3.5 → v4.0 was a
-   breaking change in 2026. Every `SKILL.md` pins the verified version. If
-   you see odd compile errors, check version drift first.
+   breaking change. If `leo build` errors mention `transition` or
+   `async function` as unrecognized keywords, your CLI is on v3.x — run
+   `cargo install leo-lang --locked` to upgrade to v4.x. There's no
+   auto-migration between v3.x and v4.x. Every `SKILL.md` pins the verified
+   version, so check it first if you see odd compile errors.
+
+7. **Plan for the leo-bindings first-run cost.** If your test setup uses
+   leo-bindings + `cargo test`, the first run downloads ~40 MB of SnarkVM
+   SRS files to `~/.aleo/resources/` and can take 15–25 minutes. **Do not
+   kill the process at minute 8** — subsequent runs are fast. See
+   [`skills/aleo-plan/references/testing-strategy.md`](skills/aleo-plan/references/testing-strategy.md)
+   for when to use `leo test` vs leo-bindings.
 
 ---
 

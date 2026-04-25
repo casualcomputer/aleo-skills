@@ -128,6 +128,48 @@ npm run dev
 
 ---
 
+## Testing this example
+
+Two complementary tiers — see
+[`skills/aleo-plan/references/testing-strategy.md`](../../skills/aleo-plan/references/testing-strategy.md)
+for the full guidance.
+
+**Tier 1 — `@test` blocks (what ships in `main.leo`):**
+
+```bash
+cd contracts/invoice
+leo test
+```
+
+Covers `create_invoice` and `cancel_invoice` logic in isolation. Fast,
+sub-second.
+
+**Tier 2 — leo-bindings (recommended for `pay_invoice`):**
+
+`pay_invoice` calls `credits.aleo::transfer_private_to_public`, so any
+realistic test needs to mint credits to the payer first. That's leo-bindings
+territory. The upstream
+[`leo-bindings/examples/token/`](https://github.com/henrikkv/leo-bindings/tree/master/examples/token)
+workspace is the closest template — copy its `Cargo.toml` and `tests/` layout
+into `contracts/invoice/`, then write tests that:
+
+1. `Account::dev_account(0)` for alice (payer), `(1)` for bob (merchant)
+2. Mint credits to alice via `credits.aleo`
+3. Call `aleo_invoice_example.aleo::create_invoice(commitment, amount)` from bob
+4. Call `aleo_invoice_example.aleo::pay_invoice(commitment, alice_credits, amount)` from alice
+5. Assert the invoice's status flipped from `Pending` to `Paid`
+6. Assert bob's public credits balance increased by `amount`
+
+**Heads-up: first `cargo test --release` takes 15–25 minutes** while it
+downloads ~40 MB of SnarkVM SRS files to `~/.aleo/resources/`. Subsequent
+runs are fast. **Don't kill it at minute 8.**
+
+A pre-wired `tests/` directory will land in a future commit once the
+`/aleo-contract` skill ships and can scaffold the leo-bindings boilerplate
+automatically.
+
+---
+
 ## What this example does NOT cover
 
 - Payroll or subscription scheduling (see future `architecture-payroll.md`)

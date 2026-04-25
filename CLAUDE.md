@@ -27,9 +27,24 @@ that imports these skills. They override generic defaults.
 - **Use Leo v4.0 syntax.** Do not mix v3.x:
   - `fn` (not `transition`, not `function`, not `inline`)
   - `final { ... }` blocks (not `async function finalize_*`)
-  - `program.aleo::function()` (not `program.aleo/function()`)
+  - `program.aleo::function()` and `program.aleo::mapping.get()` —
+    use `::`, **never `/`** as the separator in source. (The compiled AVM
+    bytecode uses `/` internally, but Leo source uses `::`.)
   - `f.run()` (not `f.await()`)
   - Helper fns and structs go **outside** the `program {}` block
+- **Cross-program mapping reads from inside `final {}` blocks ARE supported**
+  in Leo v4.0.2 — verified April 2026. The pattern:
+  ```leo
+  final {
+      let bal: u64 = other_program.aleo::balances.get_or_use(addr, 0u64);
+  }
+  ```
+  is canonical for oracle/vault-style designs. Do not invent workarounds
+  unless a verified bug is referenced.
+- **If `leo build` errors mention `transition` or `async function`** as
+  unrecognized keywords, the user's CLI is on v3.x. Tell them to run
+  `cargo install leo-lang --locked` to upgrade. v3.x and v4.x are not
+  source-compatible — there is no auto-migration.
 
 ## 3. Privacy hygiene (non-negotiable)
 
@@ -84,7 +99,28 @@ Before writing any code, **read what's already there**. Match the existing style
   (Delegated Proving Service) over local proving. Local proving is slow and
   battery/CPU-heavy on mobile.
 
-## 7. Vendor neutrality (skills layer)
+## 7. Testing & local development
+
+- **Two testing tiers are canonical.** See
+  `skills/aleo-plan/references/testing-strategy.md` for the full strategy.
+  - `@test fn` blocks inside `main.leo` for in-language unit tests of single
+    programs. Run with `leo test`. Fast, no Rust required.
+  - leo-bindings + `cargo test --release` for integration tests across
+    multiple programs (e.g., your program calling `credits.aleo`). Required
+    when you need to set up cross-program state in a test.
+- **First leo-bindings run takes 15–25 minutes.** It downloads SnarkVM SRS
+  files (`powers-of-beta-{16,17,18}.usrs`, `shifted-powers-of-beta-{17,18}.usrs`,
+  ~40 MB total) to `~/.aleo/resources/`. Subsequent runs use the cache and
+  are fast. **Tell the user this before they kill the process at minute 8
+  thinking it hung.** (Verified April 2026.)
+- **leo-bindings depends on a custom snarkVM fork** (`henrikkv/snarkVM`
+  branch `leo-bindings`), not upstream `ProvableHQ/snarkVM`. Devs should
+  know this before adopting leo-bindings — it's a real trust dependency.
+- **`leo test` and leo-bindings are complementary, not competing.** Use
+  `@test` for "is the per-program logic right" and leo-bindings for "does
+  the multi-program flow actually work end-to-end."
+
+## 8. Vendor neutrality (skills layer)
 
 When working inside this repo or extending its skills:
 
@@ -97,7 +133,7 @@ When working inside this repo or extending its skills:
 - Aleo ecosystem tools (Leo CLI, `@provablehq/sdk`, wallet adaptors) are pinned
   with version + last-verified date.
 
-## 8. When in doubt, ask
+## 9. When in doubt, ask
 
 For ambiguous requests:
 - "Is this for testnet or mainnet?" (assume testnet if unanswered)
